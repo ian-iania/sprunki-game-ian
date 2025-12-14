@@ -63,20 +63,40 @@
                     <input type="text" id="char-name" required
                         class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                         placeholder="e.g. My Sprunki">
+                    <p class="text-xs text-gray-500 mt-1" id="name-help">Auto-filled from Library selection</p>
                 </div>
 
-                <div>
+                <!-- Shared or Custom Image Input -->
+                <div id="image-input-container" class="hidden">
                     <label class="block text-sm font-medium text-gray-300 mb-1">Image (Square, PNG/JPG)</label>
                     <input type="file" id="char-image" accept="image/*"
                         class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
-                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current image (Edit Mode)</p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Sound Loop (Short MP3/WAV)</label>
-                    <input type="file" id="char-sound" accept="audio/*"
-                        class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer">
-                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current sound (Edit Mode)</p>
+                <!-- Mode Selection -->
+                <div class="flex gap-2 mb-4 border-b border-gray-600 pb-2">
+                    <button type="button" id="mode-library-btn"
+                        class="flex-1 py-1 text-sm font-bold text-blue-400 border-b-2 border-blue-400">Library</button>
+                    <button type="button" id="mode-custom-btn"
+                        class="flex-1 py-1 text-sm font-bold text-gray-500 hover:text-gray-300">Upload Custom</button>
+                </div>
+
+                <!-- Library View -->
+                <div id="library-view" class="h-64 overflow-y-auto custom-scrollbar">
+                    <p class="text-xs text-gray-400 mb-2">Select a character to add:</p>
+                    <div id="library-grid" class="grid grid-cols-3 gap-2">
+                        <!-- Thumbnails injected here -->
+                    </div>
+                </div>
+
+                <!-- Custom Upload View (Hidden by default) -->
+                <div id="custom-view" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Sound Loop (Short MP3/WAV)</label>
+                        <input type="file" id="char-sound" accept="audio/*"
+                            class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-1">Required for custom uploads</p>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3 mt-6">
