@@ -146,12 +146,72 @@ export class GameEngine {
             });
             icon.appendChild(editBtn);
 
+            // Mouse Drag Events
             icon.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', char.id);
                 e.dataTransfer.effectAllowed = 'copy';
             });
+
+            // Touch Drag Events (Mobile/iPad)
+            icon.addEventListener('touchstart', (e) => {
+                // Prevent scrolling while dragging
+                e.preventDefault();
+                this.initTouchDrag(e, char);
+            }, { passive: false });
+
             this.pickerEl.appendChild(icon);
         });
+    }
+
+    // --- Touch Logic for Mobile ---
+    initTouchDrag(e, char) {
+        const touch = e.touches[0];
+
+        // Create a ghost element for visual feedback
+        const ghost = document.createElement('div');
+        ghost.classList.add('touch-ghost');
+        ghost.style.position = 'fixed';
+        ghost.style.left = `${touch.clientX - 40}px`;
+        ghost.style.top = `${touch.clientY - 40}px`;
+        ghost.style.width = '80px';
+        ghost.style.height = '80px';
+        ghost.style.backgroundImage = `url(${char.imageVal})`;
+        ghost.style.backgroundSize = 'cover';
+        ghost.style.backgroundColor = char.color;
+        ghost.style.borderRadius = '12px';
+        ghost.style.opacity = '0.8';
+        ghost.style.pointerEvents = 'none'; // Allow distinct elementFromPoint
+        ghost.style.zIndex = '1000';
+
+        document.body.appendChild(ghost);
+        this.currentDragGhost = ghost;
+
+        const moveHandler = (moveEvent) => {
+            const moveTouch = moveEvent.touches[0];
+            ghost.style.left = `${moveTouch.clientX - 40}px`;
+            ghost.style.top = `${moveTouch.clientY - 40}px`;
+        };
+
+        const endHandler = (endEvent) => {
+            const endTouch = endEvent.changedTouches[0];
+            const targetEl = document.elementFromPoint(endTouch.clientX, endTouch.clientY);
+
+            // Find if we dropped on a slot
+            const slot = targetEl?.closest('.char-slot');
+            if (slot) {
+                const index = parseInt(slot.dataset.index);
+                this.assignCharacterToSlot(index, char.id);
+            }
+
+            // Cleanup
+            document.body.removeChild(ghost);
+            this.currentDragGhost = null;
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', endHandler);
+        };
+
+        document.addEventListener('touchmove', moveHandler, { passive: false });
+        document.addEventListener('touchend', endHandler);
     }
 
     handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
