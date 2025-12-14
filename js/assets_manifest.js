@@ -25,6 +25,7 @@ export const ASSET_MANIFEST = {
         { name: "El Cool P", image: "personagens/2/El_Cool_P.png", sound: "personagens/2/El_Cool_P.wav", color: "#1e293b" },
         { name: "Executive", image: "personagens/2/Executive.png", sound: "personagens/2/Executive.wav", color: "#581c87" },
         { name: "Grey (Phase 2)", image: "personagens/2/Grey_fase2.png", sound: "personagens/2/Gray_fase2.wav", color: "#4c1d95" },
-        { name: "Lobotomy Man", image: "personagens/2/Lobotomy_Man.png", sound: "personagens/2/Lobotomy_Man.wav", color: "#b91c1c" }
+        { name: "Lobotomy Man", image: "personagens/2/Lobotomy_Man.png", sound: "personagens/2/Lobotomy_Man.wav", color: "#b91c1c" },
+        { name: "Robopinho", image: "personagens/2/Robopinho.png", sound: "personagens/2/Robopinho.wav", color: "#64748b" }
     ]
 };
