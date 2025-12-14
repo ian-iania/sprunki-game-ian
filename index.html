@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprunki Incredibox Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen font-sans select-none overflow-hidden">
+
+    <!-- Main Game Container -->
+    <div class="relative w-full h-screen flex flex-col items-center justify-between py-6">
+
+        <!-- Header -->
+        <header class="w-full text-center z-10">
+            <h1 class="text-4xl font-bold tracking-widest uppercase drop-shadow-md text-yellow-400">Sprunki</h1>
+            <p class="text-sm text-gray-400">Drag icons to characters to make music</p>
+        </header>
+
+        <!-- Stage Area (Characters) -->
+        <div id="stage"
+            class="flex-1 w-full max-w-6xl flex items-center justify-center gap-2 px-4 transition-all duration-300">
+            <!-- Character slots will be generated here by JS -->
+        </div>
+
+        <!-- Controls & Custom Upload -->
+        <div class="flex gap-4 mb-4 z-10">
+            <button id="stop-btn"
+                class="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg transition-transform transform hover:scale-105">
+                STOP ALL
+            </button>
+            <button id="upload-toggle-btn"
+                class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-full font-bold shadow-lg transition-transform transform hover:scale-105">
+                + Custom Character
+            </button>
+        </div>
+
+        <!-- Sound Picker Area -->
+        <div id="picker"
+            class="w-full max-w-5xl bg-gray-800/80 backend-blur-md rounded-xl p-4 flex items-center justify-center gap-4 overflow-x-auto min-h-[120px] shadow-2xl border border-gray-700">
+            <!-- Sound icons will be generated here by JS -->
+            <div class="text-gray-500 italic">Loading sounds...</div>
+        </div>
+
+    </div>
+
+    <!-- Custom Character Modal -->
+    <div id="upload-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6 text-center text-blue-400">Create Custom Character</h2>
+
+            <form id="custom-char-form" class="space-y-4">
+                <input type="hidden" id="edit-char-id" value="">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Character Name</label>
+                    <input type="text" id="char-name" required
+                        class="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. My Sprunki">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Image (Square, PNG/JPG)</label>
+                    <input type="file" id="char-image" accept="image/*"
+                        class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current image (Edit Mode)</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Sound Loop (Short MP3/WAV)</label>
+                    <input type="file" id="char-sound" accept="audio/*"
+                        class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-500 cursor-pointer">
+                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current sound (Edit Mode)</p>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="close-modal-btn"
+                        class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded text-white transition-colors">Cancel</button>
+                    <button type="submit" id="modal-submit-btn"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded font-bold text-white shadow-lg transition-colors">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

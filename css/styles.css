@@ -1,0 +1,138 @@
+/* Base Styles */
+body {
+    background: radial-gradient(circle at center, #1f2937 0%, #111827 100%);
+}
+
+/* Character Slot Styles */
+.char-slot {
+    position: relative;
+    width: 140px;
+    height: 300px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.char-slot:hover {
+    transform: scale(1.02);
+}
+
+.char-slot.drag-over {
+    transform: scale(1.1);
+}
+
+.char-slot.drag-over::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px dashed #60a5fa;
+    border-radius: 1rem;
+    background: rgba(96, 165, 250, 0.1);
+    pointer-events: none;
+}
+
+/* Character Visuals */
+.char-idle {
+    width: 100%;
+    height: 100%;
+    /* Placeholder silhouette */
+    background-color: #374151;
+    /* gray-700 */
+    mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 C30 20 15 35 15 60 C15 80 25 90 25 110 C25 150 20 180 20 200 L80 200 C80 180 75 150 75 110 C75 90 85 80 85 60 C85 35 70 20 50 20 Z" fill="black"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 C30 20 15 35 15 60 C15 80 25 90 25 110 C25 150 20 180 20 200 L80 200 C80 180 75 150 75 110 C75 90 85 80 85 60 C85 35 70 20 50 20 Z" fill="black"/></svg>');
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center bottom;
+    -webkit-mask-position: center bottom;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.char-active {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+    animation: bounce-rhythm 0.5s infinite alternate ease-in-out;
+    /* Animation duration will be overridden by JS to match BPM */
+}
+
+@keyframes bounce-rhythm {
+    0% {
+        transform: scaleY(1);
+    }
+
+    100% {
+        transform: scaleY(1.03);
+    }
+}
+
+/* Sound Icon Styles */
+.sound-icon {
+    width: 80px;
+    height: 80px;
+    cursor: grab;
+    transition: transform 0.2s, filter 0.2s;
+    user-select: none;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #374151;
+    position: relative;
+}
+
+.sound-icon:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.sound-icon:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+}
+
+.sound-icon.in-use {
+    opacity: 0.4;
+    filter: grayscale(100%);
+    pointer-events: none;
+    /* Can't drag same sound twice */
+}
+
+/* Category Colors */
+.type-beat {
+    border-bottom: 4px solid #f97316;
+}
+
+/* Orange */
+.type-effect {
+    border-bottom: 4px solid #eab308;
+}
+
+/* Yellow/Gold */
+.type-melody {
+    border-bottom: 4px solid #ef4444;
+}
+
+/* Red */
+.type-voice {
+    border-bottom: 4px solid #3b82f6;
+}
+
+/* Blue */
+
+/* Loading Spinner */
+.loader {
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #3b82f6;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
