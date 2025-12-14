@@ -113,17 +113,16 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle.textContent = `Edit Character: ${char.name}`;
         modalSubmitBtn.textContent = 'Save Changes';
 
-        // Hide Mode Switchers in Edit Mode (Keep it simple)
-        modeLibraryBtn.parentElement.classList.add('hidden');
-        libraryView.classList.add('hidden');
-        customView.classList.remove('hidden'); // Allow changing sound?
-        // Actually for edit, let's keep it simple: Just rename or minimal changes.
-        // Or show custom view to allow replacing assets.
-        imageInputContainer.classList.remove('hidden');
+        // Show Mode Switchers (Enable Library for Edit)
+        modeLibraryBtn.parentElement.classList.remove('hidden');
+
+        // Default to Library View for convenience, or Custom? 
+        // User asked: "olhando e usando thumbnail". So Library default is good.
+        switchMode('library');
 
         // Pre-fill Name
         nameInput.value = char.name;
-        nameInput.readOnly = false;
+        nameInput.readOnly = false; // Allow editing name
 
         // Reset File inputs
         imageInput.value = '';
@@ -165,34 +164,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const editingId = editCharIdInput.value;
         const name = nameInput.value;
 
+        // Common logic to fetch library assets
+        let libImgBlob = null;
+        let libAudioBlob = null;
+
+        if (selectedLibraryChar) {
+            try {
+                const splitRes = await fetch(selectedLibraryChar.sound);
+                libAudioBlob = await splitRes.blob();
+
+                const imgRes = await fetch(selectedLibraryChar.image);
+                libImgBlob = await imgRes.blob();
+            } catch (err) {
+                console.error("Failed to load library assets", err);
+                alert("Error loading library assets. Check console.");
+                return;
+            }
+        }
+
         if (editingId) {
             // EDIT MODE
-            const imgFile = imageInput.files.length ? imageInput.files[0] : null;
-            const audioFile = soundInput.files.length ? soundInput.files[0] : null;
+            const imgFile = imageInput.files.length ? imageInput.files[0] : libImgBlob;
+            const audioFile = soundInput.files.length ? soundInput.files[0] : libAudioBlob;
+
+            // Note: If both file input and library are empty, passing null preserves existing assets in engine logic?
+            // Engine.editCharacter logic needs to be checked. 
+            // If we pass null, it usually keeps old one. 
+            // If we select library, we pass blobs.
+
             await engine.editCharacter(editingId, name, imgFile, audioFile);
         } else {
             // CREATE MODE
-            if (selectedLibraryChar) {
+            if (libImgBlob && libAudioBlob) {
                 // ADD FROM LIBRARY
-                // Convert paths to blobs? No, engine supports paths now.
-                // We need to extend engine to support adding "Path-based" custom chars
-                // Or fetch them and convert to blobs (better for uniform persistence).
-
-                // Fetching to Blob to ensure it works offline/persists like uploaded ones
-                try {
-                    const splitRes = await fetch(selectedLibraryChar.sound);
-                    const splitBlob = await splitRes.blob();
-                    // Use Original Name for the file property if possible
-
-                    const imgRes = await fetch(selectedLibraryChar.image);
-                    const imgBlob = await imgRes.blob();
-
-                    await engine.addCustomCharacter(name, imgBlob, splitBlob);
-                } catch (err) {
-                    console.error("Failed to load library assets", err);
-                    alert("Error loading library assets. Check console.");
-                }
-
+                await engine.addCustomCharacter(name, libImgBlob, libAudioBlob);
             } else {
                 // MANUAL UPLOAD
                 const imgFile = imageInput.files.length ? imageInput.files[0] : null;
