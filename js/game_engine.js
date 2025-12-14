@@ -12,6 +12,7 @@ export class GameEngine {
         this.storageManager = new StorageManager();
         this.characters = []; // Single source of truth (from DB)
         this.activeSlots = new Array(7).fill(null); // 7 Slots, null or charID
+        this.currentPhase = 1; // 1 = Normal, 2 = Spooky/Phase 2
 
         this.stageEl = document.getElementById('stage');
         this.pickerEl = document.getElementById('picker');
@@ -26,13 +27,17 @@ export class GameEngine {
         // 1. Load existing from DB
         let persisted = await this.storageManager.loadAllCharacters();
 
-        // 2. Check if we need to SEED the Defaults (First Run)
-        if (!persisted || persisted.length === 0) {
-            console.log("Database empty. Seeding default characters...");
-            const seeds = defaultCharacters.map(c => ({
+        // 2. Synchronization / Seeding
+        // Check if there are any default characters (Phase 1 OR Phase 2) that are missing from DB
+        // This handles both "First Run" and "Update with new characters" scenarios.
+        const missingDefaults = defaultCharacters.filter(def => !persisted.some(p => p.id === def.id));
+
+        if (missingDefaults.length > 0) {
+            console.log(`Found ${missingDefaults.length} missing default characters. Seeding...`);
+            const seeds = missingDefaults.map(c => ({
                 ...c,
-                isDefault: true, // Marker
-                // Ensure we save paths, not blobs yet
+                isDefault: true,
+                // Ensure we save paths
                 imageVal: c.imageVal,
                 soundVal: c.soundVal
             }));
@@ -40,7 +45,7 @@ export class GameEngine {
             for (const char of seeds) {
                 await this.storageManager.saveCharacter(char);
             }
-            // Reload
+            // Reload after seeding
             persisted = await this.storageManager.loadAllCharacters();
         }
 
@@ -64,7 +69,8 @@ export class GameEngine {
 
             this.characters.push({
                 ...p,
-                imageVal: imgUrl
+                imageVal: imgUrl,
+                phase: p.phase || 1 // Default to Phase 1 if undefined (legacy records)
             });
         }
 
@@ -98,7 +104,22 @@ export class GameEngine {
 
         // Sort: Defaults first, then custom? Or just ID order?
         // Let's keep array order (which is insertion order from DB usually)
-        this.characters.forEach(char => {
+        // Filter by Current Phase
+        // Phase 1 shows Phase 1 chars + Custom chars (assuming cust chars are Phase 1 or universal for now)
+        // Let's assume Custom Characters (created by user) are available in BOTH phases or just Phase 1?
+        // Requirement didn't specify. Let's show Custom Chars in Phase 1 for now, or match phase property.
+        // If we created a custom char in Phase 2, it might not have phase prop saved correctly in my previous edit?
+        // Wait, app.js logic for custom creation needs checking.
+        // For now: Show characters where char.phase matches currentPhase.
+        // Custom chars might depend on how we saved them.
+
+        const phaseChars = this.characters.filter(c => {
+            // If character has no phase (custom legacy), assume phase 1
+            const p = c.phase || 1;
+            return p === this.currentPhase;
+        });
+
+        phaseChars.forEach(char => {
             const icon = document.createElement('div');
             icon.classList.add('sound-icon', `type-${char.type}`, 'group', 'relative');
             icon.draggable = true;
@@ -191,6 +212,19 @@ export class GameEngine {
         });
     }
 
+    togglePhase() {
+        this.currentPhase = (this.currentPhase === 1) ? 2 : 1;
+
+        // 1. Update Visuals (Body Class)
+        document.body.classList.toggle('phase-2', this.currentPhase === 2);
+
+        // 2. Refresh Picker to show relevant characters
+        this.renderPicker();
+
+        // 3. Optional: Trigger specific sound or effect here if desired
+        console.log(`Switched to Phase ${this.currentPhase}`);
+    }
+
     async addCustomCharacter(name, imgFile, audioFile) {
         const id = 'custom_' + Date.now();
         // Save to Persistence
@@ -202,7 +236,8 @@ export class GameEngine {
             imageBlob: imgFile,
             audioBlob: audioFile,
             imageVal: null,
-            soundVal: null
+            soundVal: null,
+            phase: this.currentPhase // Save to current phase
         };
         await this.storageManager.saveCharacter(persistedChar);
 

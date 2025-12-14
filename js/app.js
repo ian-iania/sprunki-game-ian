@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup Custom Upload Modal Logic
     const modal = document.getElementById('upload-modal');
     const uploadBtn = document.getElementById('upload-toggle-btn');
+    const phaseToggleBtn = document.getElementById('phase-toggle-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const customForm = document.getElementById('custom-char-form');
 
@@ -95,5 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stop Button
     document.getElementById('stop-btn').addEventListener('click', () => {
         engine.stopAll();
+    });
+
+    // Phase Toggle Button
+    phaseToggleBtn.addEventListener('click', () => {
+        engine.togglePhase();
+        if (engine.currentPhase === 2) {
+            phaseToggleBtn.classList.add('bg-purple-900', 'ring-2', 'ring-purple-400', 'scale-105');
+            phaseToggleBtn.innerText = "FASE 1";
+        } else {
+            phaseToggleBtn.classList.remove('bg-purple-900', 'ring-2', 'ring-purple-400', 'scale-105');
+            phaseToggleBtn.innerText = "FASE 2";
+        }
     });
 });

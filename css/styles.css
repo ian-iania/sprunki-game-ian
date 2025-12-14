@@ -136,3 +136,72 @@ body {
         transform: rotate(360deg);
     }
 }
+
+/* --- PHASE 2 STYLES (Cemetery Theme) --- */
+
+/* Phase 2 Background */
+body.phase-2 {
+    background: radial-gradient(circle at center, #2e022e 0%, #000000 100%);
+    /* Deep purple/black */
+}
+
+body.phase-2 header h1 {
+    color: #e879f9;
+    /* Purple-400 */
+    text-shadow: 0 0 10px #d946ef;
+}
+
+/* Phase 2 Character Visuals (Ghostly/Skeleton) */
+.phase-2 .char-idle {
+    filter: invert(1) grayscale(1) opacity(0.6);
+}
+
+.phase-2 .char-active {
+    filter: grayscale(100%) contrast(150%) hue-rotate(180deg) drop-shadow(0 0 15px rgba(255, 0, 255, 0.5));
+    animation: bounce-rhythm 0.5s infinite alternate ease-in-out, ghost-float 3s infinite ease-in-out;
+}
+
+@keyframes ghost-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Phase 2 Picker Icons */
+.phase-2 .sound-icon {
+    border-color: #581c87;
+    /* dark purple */
+    background-color: #2e1065;
+}
+
+.phase-2 .sound-icon:hover {
+    box-shadow: 0 0 15px #a855f7;
+}
+
+/* Adjust colors for Phase 2 categories */
+.phase-2 .type-beat {
+    border-bottom-color: #cbd5e1;
+}
+
+/* Bone White */
+.phase-2 .type-effect {
+    border-bottom-color: #a855f7;
+}
+
+/* Purple */
+.phase-2 .type-melody {
+    border-bottom-color: #ef4444;
+}
+
+/* Red (Blood) */
+.phase-2 .type-voice {
+    border-bottom-color: #3f3f46;
+}
+
+/* Dark Gray */
