@@ -138,6 +138,59 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.onEditRequest = handleEditRequest;
 
     // Start Engine with seeded default characters
+
+    // --- DYNAMIC ASSET INTEGRATION ---
+    const manifestChars1 = assetLoader.getLibraryCharacters(1);
+    const manifestChars2 = assetLoader.getLibraryCharacters(2);
+
+    // 1. Update existing hardcoded characters with new assets
+    SPRUNKI_CHARACTERS.forEach(char => {
+        const list = (char.phase === 2) ? manifestChars2 : manifestChars1;
+        // Match by ID or Name (case-insensitive)
+        const match = list.find(m =>
+            m.name.toLowerCase() === char.id.toLowerCase() ||
+            m.name.toLowerCase() === char.name.replace(/_/g, ' ').toLowerCase()
+        );
+
+        if (match) {
+            console.log(`Updated assets for ${char.name}`);
+            char.imageVal = match.image;
+            char.soundVal = match.sound;
+        }
+    });
+
+    // 2. Add new characters from Manifest that are NOT in SPRUNKI_CHARACTERS
+    const allExistingIds = new Set(SPRUNKI_CHARACTERS.map(c => c.id));
+
+    const addNew = (list, phase) => {
+        list.forEach(m => {
+            // Check if this manifest character is already represented
+            // We match by name since manifest "name" is the key
+            // The manifest name is "oren", "clukr" etc.
+            // We need to check if ANY existing char has this ID or Name
+            const exists = SPRUNKI_CHARACTERS.some(c =>
+                c.id.toLowerCase() === m.name.toLowerCase() ||
+                c.name.toLowerCase() === m.name.toLowerCase()
+            );
+
+            if (!exists) {
+                console.log(`Adding new character from manifest: ${m.name}`);
+                SPRUNKI_CHARACTERS.push({
+                    id: m.name.replace(/\s+/g, '_'),
+                    name: m.name.charAt(0).toUpperCase() + m.name.slice(1), // Capitalize
+                    type: 'voice', // Default type (user can edit later if we add type to manifest logic)
+                    phase: phase,
+                    color: m.color || '#6b7280',
+                    imageVal: m.image,
+                    soundVal: m.sound
+                });
+            }
+        });
+    };
+
+    addNew(manifestChars1, 1);
+    addNew(manifestChars2, 2);
+
     engine.start(SPRUNKI_CHARACTERS);
 
     // Open Modal for "New" (Reset Mode)

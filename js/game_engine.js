@@ -77,6 +77,31 @@ export class GameEngine {
         // 4. Initial Render
         this.initStage();
         this.renderPicker();
+
+        // 5. Randomly Fill Stage (User Request)
+        this.randomizeStage(1);
+    }
+
+    randomizeStage(phase) {
+        // Filter characters for the requested phase
+        const candidates = this.characters.filter(c => (c.phase || 1) === phase);
+
+        // Shuffle array safely
+        const shuffled = [...candidates].sort(() => 0.5 - Math.random());
+
+        // Fill up to 7 slots
+        for (let i = 0; i < 7; i++) {
+            if (i < shuffled.length) {
+                const char = shuffled[i];
+                // Assign to slot without auto-starting audio to prevent chaos/blocking
+                // We use assignCharacterToSlot BUT we might want to mute or not startLoop immediately?
+                // The current assignCharacterToSlot calls startLoop.
+                // However, AudioContext is usually suspended until user interaction.
+                // So calling startLoop here will schedule them, but they won't play until the first click.
+                // This fits the "ready to play" state perfectly.
+                this.assignCharacterToSlot(i, char.id);
+            }
+        }
     }
 
     initStage() {
