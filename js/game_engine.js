@@ -24,20 +24,22 @@ export class GameEngine {
     async start(defaultCharacters) {
         await this.storageManager.init();
 
-        // 1. Load existing from DB
+        // 1. Cleardown old data to prevent corrupted/legacy loop issues (User Request)
+        // This ensures new manifest paths are used instead of old cached blobs/paths.
+        await this.storageManager.clearAll();
+
+        // 2. Load existing (will be empty)
         let persisted = await this.storageManager.loadAllCharacters();
 
-        // 2. Synchronization / Seeding
-        // Check if there are any default characters (Phase 1 OR Phase 2) that are missing from DB
-        // This handles both "First Run" and "Update with new characters" scenarios.
-        const missingDefaults = defaultCharacters.filter(def => !persisted.some(p => p.id === def.id));
+        // 3. Synchronization / Seeding
+        // Since we cleared, this will re-seed EVERYTHING with the new Manifest data passed in defaultCharacters
+        const missingDefaults = defaultCharacters; // All are missing now
 
         if (missingDefaults.length > 0) {
-            console.log(`Found ${missingDefaults.length} missing default characters. Seeding...`);
+            console.log(`Seeding ${missingDefaults.length} characters...`);
             const seeds = missingDefaults.map(c => ({
                 ...c,
                 isDefault: true,
-                // Ensure we save paths
                 imageVal: c.imageVal,
                 soundVal: c.soundVal
             }));
@@ -45,22 +47,17 @@ export class GameEngine {
             for (const char of seeds) {
                 await this.storageManager.saveCharacter(char);
             }
-            // Reload after seeding
             persisted = await this.storageManager.loadAllCharacters();
         }
 
-        // 3. Process and Load into Memory
+        // 4. Process and Load into Memory
         this.characters = [];
         for (const p of persisted) {
-            // Reconstruct runtime object
             let imgUrl = p.imageVal;
-
-            // If it has a Blob stored (Custom upload), create URL
             if (p.imageBlob) {
                 imgUrl = URL.createObjectURL(p.imageBlob);
             }
 
-            // Load Audio
             if (p.audioBlob) {
                 await this.audioManager.loadUserSound(p.id, p.audioBlob);
             } else if (p.soundVal) {
@@ -70,7 +67,7 @@ export class GameEngine {
             this.characters.push({
                 ...p,
                 imageVal: imgUrl,
-                phase: p.phase || 1 // Default to Phase 1 if undefined (legacy records)
+                phase: p.phase || 1
             });
         }
 
@@ -93,13 +90,8 @@ export class GameEngine {
         for (let i = 0; i < 7; i++) {
             if (i < shuffled.length) {
                 const char = shuffled[i];
-                // Assign to slot without auto-starting audio to prevent chaos/blocking
-                // We use assignCharacterToSlot BUT we might want to mute or not startLoop immediately?
-                // The current assignCharacterToSlot calls startLoop.
-                // However, AudioContext is usually suspended until user interaction.
-                // So calling startLoop here will schedule them, but they won't play until the first click.
-                // This fits the "ready to play" state perfectly.
-                this.assignCharacterToSlot(i, char.id);
+                // Pass true for 'mute' to just populate visual without starting audio chaos
+                this.assignCharacterToSlot(i, char.id, true);
             }
         }
     }
@@ -249,7 +241,7 @@ export class GameEngine {
         if (charId) this.assignCharacterToSlot(index, charId);
     }
 
-    assignCharacterToSlot(index, charId) {
+    assignCharacterToSlot(index, charId, mute = false) {
         const char = this.characters.find(c => c.id === charId);
         if (!char) return;
 
@@ -271,7 +263,10 @@ export class GameEngine {
         if (!slotEl.contains(visual)) slotEl.appendChild(visual);
         const icon = this.pickerEl.querySelector(`.sound-icon[data-id="${charId}"]`);
         if (icon) icon.classList.add('in-use');
-        this.audioManager.startLoop(charId);
+
+        if (!mute) {
+            this.audioManager.startLoop(charId);
+        }
     }
 
     removeCharacterFromSlot(index) {

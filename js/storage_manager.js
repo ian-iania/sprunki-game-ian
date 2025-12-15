@@ -72,4 +72,17 @@ export class StorageManager {
             tx.oncomplete = () => resolve();
         });
     }
+    async clearAll() {
+        if (!this.db) await this.init();
+        return new Promise((resolve, reject) => {
+            const tx = this.db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.clear();
+            request.onsuccess = () => {
+                console.log("StorageManager: DB Cleared");
+                resolve();
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
 }
