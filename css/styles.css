@@ -70,9 +70,9 @@ body {
 
 /* Sound Icon Styles */
 .sound-icon {
-    width: 100px;
-    height: 120px;
-    /* Reduced height to fit figure better */
+    width: 130px;
+    height: 150px;
+    /* Increased size for Phase 1 as requested */
     cursor: grab;
     transition: transform 0.2s, filter 0.2s;
     user-select: none;
@@ -176,6 +176,9 @@ body.phase-2 header h1 {
 
 /* Phase 2 Picker Icons */
 .phase-2 .sound-icon {
+    width: 100px;
+    height: 120px;
+    /* Maintain original "perfect" size for Phase 2 */
     border-color: #581c87;
     /* dark purple */
     background-color: #2e1065;
