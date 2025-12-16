@@ -194,18 +194,20 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.start(SPRUNKI_CHARACTERS);
 
     // Open Modal for "New" (Reset Mode)
-    uploadBtn.addEventListener('click', () => {
-        editCharIdInput.value = ''; // Empty = New
-        modalTitle.textContent = 'Add Character';
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            editCharIdInput.value = ''; // Empty = New
+            modalTitle.textContent = 'Add Character';
 
-        customForm.reset();
-        modeLibraryBtn.parentElement.classList.remove('hidden');
+            customForm.reset();
+            modeLibraryBtn.parentElement.classList.remove('hidden');
 
-        // Default to Library Mode
-        switchMode('library');
+            // Default to Library Mode
+            switchMode('library');
 
-        modal.classList.remove('hidden');
-    });
+            modal.classList.remove('hidden');
+        });
+    }
 
     closeModalBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
