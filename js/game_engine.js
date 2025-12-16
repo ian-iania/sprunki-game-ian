@@ -75,8 +75,8 @@ export class GameEngine {
         this.initStage();
         this.renderPicker();
 
-        // 5. Randomly Fill Stage (User Request)
-        this.randomizeStage(1);
+        // Random fill disabled per user request (revert to shadows/empty)
+        // this.randomizeStage(1); 
     }
 
     randomizeStage(phase) {
@@ -147,7 +147,9 @@ export class GameEngine {
 
             if (char.imageVal && !char.imageVal.includes('placeholder')) {
                 icon.style.backgroundImage = `url(${char.imageVal})`;
-                icon.style.backgroundSize = 'cover';
+                icon.style.backgroundSize = 'contain';
+                icon.style.backgroundRepeat = 'no-repeat';
+                icon.style.backgroundPosition = 'center bottom';
                 icon.innerHTML = '';
             }
 

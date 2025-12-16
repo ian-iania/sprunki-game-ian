@@ -70,8 +70,8 @@ body {
 
 /* Sound Icon Styles */
 .sound-icon {
-    width: 80px;
-    height: 80px;
+    width: 100px; /* Increased from 80 */
+    height: 140px; /* Increased from 80 to fit tall figures */
     cursor: grab;
     transition: transform 0.2s, filter 0.2s;
     user-select: none;
