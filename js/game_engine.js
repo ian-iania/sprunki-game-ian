@@ -137,21 +137,26 @@ export class GameEngine {
         });
 
         phaseChars.forEach(char => {
+            // Filter out characters without valid images or that are just placeholders
+            const isBlob = char.imageVal && char.imageVal.startsWith('blob:');
+            const isPlaceholder = !char.imageVal || char.imageVal.includes('placeholder') || char.imageVal.includes('undefined');
+
+            if (!isBlob && isPlaceholder) return;
+
             const icon = document.createElement('div');
             icon.classList.add('sound-icon', `type-${char.type}`, 'group', 'relative');
             icon.draggable = true;
             icon.dataset.id = char.id;
 
-            icon.style.backgroundColor = char.color;
-            icon.innerHTML = `<div class="w-full h-full flex items-center justify-center text-xs font-bold text-white opacity-80">${char.name}</div>`;
+            // User requested no background colors (transparent), relying on bottom border for type
+            icon.style.backgroundColor = 'transparent';
 
-            if (char.imageVal && !char.imageVal.includes('placeholder')) {
-                icon.style.backgroundImage = `url(${char.imageVal})`;
-                icon.style.backgroundSize = 'contain';
-                icon.style.backgroundRepeat = 'no-repeat';
-                icon.style.backgroundPosition = 'center bottom';
-                icon.innerHTML = '';
-            }
+            // We know we have an image because of the filter above
+            icon.style.backgroundImage = `url(${char.imageVal})`;
+            icon.style.backgroundSize = 'contain';
+            icon.style.backgroundRepeat = 'no-repeat';
+            icon.style.backgroundPosition = 'center bottom';
+            icon.innerHTML = '';
 
             // Edit Button
             const editBtn = document.createElement('button');
